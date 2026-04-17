@@ -53,9 +53,9 @@ SIGMA_PCT = 0.30    # T0 chosen so sigma% deterioration accepted w/ prob
 RNG_SEED = 42
 
 # Search controls
-LOCAL_SEARCH_TRIES = 250 # # per iteration
+LOCAL_SEARCH_TRIES = 150 # # per iteration
 SHAKING_TRIES = 100 # attempts to generate a neighbor in shaking
-ALLOW_INFEASIBLE = False
+ALLOW_INFEASIBLE = True
 
 # Dynamic penalty settings (start values)
 LAM_CAP_INIT = 1.0
@@ -65,7 +65,7 @@ LAM_CHG_INIT = 1.0
 LAM_MIN = 1e-3
 LAM_MAX = 1e6
 
-PEN_INCREASE = 1.20  # 1.05 # 1.20   # multiply when violations persist
+PEN_INCREASE = 1.05  # multiply when violations persist
 PEN_DECREASE = 0.95   # multiply when no violations (relax)
 ###############################################################################
 
