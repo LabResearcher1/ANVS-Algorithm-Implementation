@@ -455,7 +455,7 @@ def solve(node_file_path, travel_data_file_path, service_time_file_path, waste_d
     truck_cap = 28000 # 26000
     ################################################################################################
 
-    max_cg_iter = 30
+    max_cg_iter = 15
     insert_strategy = 'IS#1'
 
     # init_max_cm_count = min(3, truck_cap)
