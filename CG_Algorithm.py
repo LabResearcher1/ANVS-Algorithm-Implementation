@@ -58,64 +58,6 @@ def compute_shortest_path(df):
     return travel_dist_dict, travel_time_dict
 
 
-# def determine_charge_time(route):
-#
-#     remaining_range = max_driving_range  # Initialize with maximum range
-#     full_charge_time = 0  # Initialize the full charge time to zero
-#
-#     for idx in range(len(route) - 1):
-#         # Identify the current and next nodes
-#         cur_id = route[idx][0]
-#         if cur_id in truck_info.keys():
-#             cur_node = truck_info[cur_id]['loc']
-#         elif cur_id in community_info.keys():
-#             cur_node = community_info[cur_id]['loc']
-#         else:  # Charging station
-#             cur_node = charge_station_info[cur_id]["off_charge_node"]
-#
-#         next_id = route[idx + 1][0]
-#         if next_id in truck_info.keys():
-#             next_node = truck_info[next_id]['loc']
-#         elif next_id in community_info.keys():
-#             next_node = community_info[next_id]['loc']
-#         else:  # Charging station
-#             next_node = charge_station_info[next_id]["off_charge_node"]
-#
-#         # If the next node is a charging station, calculate the charging time needed
-#         if next_id in charge_station_info.keys():
-#             charge_time = route[idx + 1][1]
-#             on_charge_node = charge_station_info[next_id]["on_charge_node"]
-#             off_charge_node = charge_station_info[next_id]["off_charge_node"]
-#             distance = travel_dist_dict[cur_node][on_charge_node] + travel_dist_dict[on_charge_node][off_charge_node]
-#
-#             # Update remaining range after traveling to and from the charging station
-#             remaining_range -= distance
-#             # Calculate the required time to fully charge
-#             full_charge_time = (max_driving_range - remaining_range) / charge_rate
-#             # Reset remaining range to maximum after charging
-#             remaining_range = max_driving_range
-#         else:
-#             # Update remaining range for a regular node
-#             distance = travel_dist_dict[cur_node][next_node]
-#             remaining_range -= distance
-#
-#     # Calculate redundant distance after completing the route
-#     redundant_dist = remaining_range - min_driving_range
-#
-#     # Adjust the charging time considering the redundant distance
-#     if full_charge_time > 0:
-#         charge_time = full_charge_time - (redundant_dist / charge_rate)
-#     else:
-#         charge_time = 0
-#
-#     # Ensure charge time respects the minimum charge time requirement
-#     if charge_time > 0:
-#         return True, max(min_charge_time, charge_time)
-#     else:
-#         # No charging needed, return 0
-#         return False, 0
-
-
 def determine_charge_time(route):
 
     remaining_range = max_driving_range
@@ -336,87 +278,6 @@ def generate_best_route_by_one_insertion(route, am_id_insert, community_dual):
         return False, None
 
 
-###############################################################################################################################
-#
-# def generate_best_route_by_one_insertion(route, am_id_insert, community_dual):
-#     list_good_routes = []
-#     dict_reduced_cost = {}
-#
-#     # Iterate over possible insertion points
-#     for i in range(1, len(route)):
-#
-#     # positions = {1, len(route) // 2, len(route) - 1}
-#     # for i in sorted(positions):
-#     # for i in range(1, len(route), 2):
-#
-#         # Create a new list with the new node inserted at the i-th position
-#         cur_insert = route[:i] + [(am_id_insert, community_info[am_id_insert]['service_time'])] + route[i:]
-#
-#         # Convert the route to a tuple for hashable storage
-#         cur_insert_tuple = tuple(cur_insert)
-#
-#         # Check if the new route is feasible
-#         if cur_insert_tuple not in route_pool:
-#             if_feasible = mf.check_route_feasibility(cur_insert)
-#
-#             if if_feasible == True:
-#                 # Compute reduced cost
-#                 cm_ids = [id[0] for id in cur_insert if id[0] in community_info.keys()]
-#                 total_travel_dist, total_travel_time, charging_time = mf.find_route_dist_time(cur_insert)
-#                 #total_travel_dist, total_travel_time = mf.find_route_dist_time(cur_insert)
-#                 total_route_cost = total_travel_dist * unit_dist_cost + total_travel_time * unit_time_cost + charging_time*unit_charge_cost
-#                 #total_route_cost = total_travel_dist * unit_dist_cost + total_travel_time * unit_time_cost
-#                 reduced_cost = total_route_cost - sum(community_dual[cm] for cm in cm_ids)
-#
-#
-#                 # Add feasible route and its reduced cost
-#                 if reduced_cost < -0.00001:
-#                     route_pool.append(cur_insert_tuple)
-#                     list_good_routes.append(cur_insert)
-#                     dict_reduced_cost[cur_insert_tuple] = reduced_cost
-#
-#
-#             elif if_feasible == 'range_violation':
-#                 # Handle range violations by inserting charging stations
-#                 fesible_routes_with_charge = mf.insert_charge_station(cur_insert)
-#                 for fesible_route in fesible_routes_with_charge:
-#                     fesible_route_tuple = tuple(fesible_route)  # Convert to tuple
-#                     if fesible_route_tuple not in route_pool:
-#                         cm_ids = [id[0] for id in fesible_route if id[0] in community_info.keys()]
-#                         total_travel_dist, total_travel_time, charging_time = mf.find_route_dist_time(fesible_route)
-#                         #total_travel_dist, total_travel_time = mf.find_route_dist_time(fesible_route)
-#                         total_route_cost = total_travel_dist * unit_dist_cost + total_travel_time * unit_time_cost + charging_time*unit_charge_cost
-#                         #total_route_cost = total_travel_dist * unit_dist_cost + total_travel_time * unit_time_cost
-#                         reduced_cost = total_route_cost - sum(community_dual[cm] for cm in cm_ids)
-#
-#
-#                         route_pool.append(fesible_route_tuple)
-#                         list_good_routes.append(fesible_route)
-#                         dict_reduced_cost[fesible_route_tuple] = reduced_cost
-#                         #print(f"Route after charging station insertion: {fesible_route}, Reduced Cost: {reduced_cost}")
-#
-#     # Sort routes by reduced cost
-#     if list_good_routes:
-#         list_good_routes = sorted(list_good_routes, key=lambda x: dict_reduced_cost[tuple(x)])
-#
-#         # Find the index of the first positive reduced cost
-#         positive_index = next((i for i, route in enumerate(list_good_routes) if dict_reduced_cost[tuple(route)] >= 0), len(list_good_routes))
-#
-#         # Calculate the 50% index
-#         percentage_index = int(len(list_good_routes) * 0.2)
-#
-#         # Retain routes with reduced cost below the threshold
-#         list_good_routes = list_good_routes[:max(percentage_index, positive_index)]
-#
-#     # Return the results
-#     if list_good_routes:
-#         return True, list_good_routes
-#     else:
-#         return False, None
-
-#####################################################################################################################################
-
-
 def get_route_loc(route):
     route_loc = []
     for idx in route:
@@ -431,45 +292,6 @@ def get_route_loc(route):
             route_loc.extend([on_charge_node, off_charge_node])
 
     return route_loc
-
-
-# def find_route_dist_time(route):
-#     total_travel_dist = 0
-#     total_travel_time = 0
-#
-#     for idx in range(len(route) - 1):
-#         cur_id = route[idx][0]
-#
-#         if cur_id in truck_info.keys():
-#             cur_node = truck_info[cur_id]['loc']
-#         elif cur_id in community_info.keys():
-#             cur_node = community_info[cur_id]['loc']
-#         else:
-#             cur_node = charge_station_info[cur_id]["off_charge_node"]
-#
-#         next_id = route[idx + 1][0]
-#         if next_id in truck_info.keys():
-#             next_node = truck_info[next_id]['loc']
-#         elif next_id in community_info.keys():
-#             next_node = community_info[next_id]['loc']
-#         else:
-#             next_node = charge_station_info[next_id]["off_charge_node"]
-#
-#         total_travel_time += route[idx + 1][1]
-#
-#         if next_id in charge_station_info.keys():
-#             on_charge_node = charge_station_info[next_id]["on_charge_node"]
-#             off_charge_node = charge_station_info[next_id]["off_charge_node"]
-#             total_travel_dist += travel_dist_dict[cur_node][on_charge_node] + travel_dist_dict[on_charge_node][
-#                 off_charge_node]
-#             total_travel_time += travel_time_dict[cur_node][on_charge_node] + travel_time_dict[on_charge_node][
-#                 off_charge_node]
-#         else:
-#             total_travel_dist += travel_dist_dict[cur_node][next_node]
-#             total_travel_time += travel_time_dict[cur_node][next_node]
-#
-#     return total_travel_dist, total_travel_time
-
 
 
 def find_route_dist_time(route):
@@ -523,49 +345,6 @@ def find_route_dist_time(route):
             total_travel_time += t  # add service time here
 
     return total_travel_dist, total_travel_time, total_charge_time
-
-
-
-
-# def add_to_all_route(route, if_route_feasible, truck_id):
-#
-#     route_id = f"r{len(all_routes) + 1}"
-#
-#     all_routes[route_id] = {}
-#     all_routes[route_id]["route_id"] = route_id
-#     all_routes[route_id]["route"] = route
-#     all_routes[route_id]["route_loc"] = mf.get_route_loc(route)
-#     all_routes[route_id]["isFeasible"] = if_route_feasible
-#     total_travel_dist, total_travel_time = find_route_dist_time(route)
-#     all_routes[route_id]["trip_milage"] = total_travel_dist
-#     all_routes[route_id]["trip_duration"] = total_travel_time
-#     all_routes[route_id]["truck_id"] = truck_id
-#     all_routes[route_id]["cs_ids"] = [id[0] for id in route if id[0] in charge_station_info.keys()]
-#     cm_covered = [id[0] for id in route if id[0] in community_info.keys()]
-#     all_routes[route_id]["cm_ids"] = cm_covered
-#     all_routes[route_id]["count_cm"] = len(cm_covered)
-#
-#     total_load = 0
-#     total_service_time = 0
-#     total_charge_time = 0
-#     for cm in cm_covered:
-#         total_load = total_load + community_info[cm]['waste_amount']
-#         total_service_time = total_service_time + community_info[cm]['service_time']
-#
-#     for idx in range(len(route)):
-#         cur_id = route[idx][0]
-#         if cur_id in charge_station_info.keys():
-#             total_charge_time = total_charge_time + route[idx][1]
-#
-#
-#     all_routes[route_id]["waste_collection"] = total_load
-#     all_routes[route_id]["service_time"] = total_service_time
-#     all_routes[route_id]["charge_time"] = total_charge_time
-#
-#     all_routes[route_id]["route_cost"] = unit_dist_cost*total_travel_dist + unit_time_cost*total_travel_time
-#
-#
-#     return route_id
 
 
 
@@ -696,33 +475,6 @@ def solve(node_file_path, travel_data_file_path, service_time_file_path, waste_d
     truck_info = dict()
     charge_station_info = dict()
 
-    # for idx in range(len(node_data)):
-    #     node_loc = node_data.loc[idx, 'Node ID']
-    #     if node_data.loc[idx, 'Label'] == 'V':
-    #         service_time = service_time_data.loc[service_time_data['Node'] == node_loc, 'Service Time'].iloc[0]
-    #         # Read waste amount from the same CSV (adjust the column name if necessary)
-    #         waste_amount = waste_demand_data.loc[waste_demand_data['Node'] == node_loc, 'Demand'].iloc[0]
-    #         community_info[f"cm{len(community_info) + 1}"] = {
-    #             "cm_id": f"cm{len(community_info) + 1}",
-    #             "loc": "i" + str(node_data.loc[idx, 'Node ID']),
-    #             "waste_amount": float(waste_amount),
-    #             "service_time": float(service_time)
-    #         }
-    #     if node_data.loc[idx, 'Label'] == 'D':
-    #         truck_info[f"truck{len(truck_info) + 1}"] = {
-    #             "truck_id": f"truck{len(truck_info) + 1}",
-    #             "loc": "i" + str(node_data.loc[idx, 'Node ID']),
-    #         }
-    #
-    #     if node_data.loc[idx, 'Label'] == 'C+':
-    #         on_charge_node = node_data.loc[idx, 'Node ID']
-    #         off_charge_node = int(
-    #             travel_data.loc[travel_data['from_node ID'] == on_charge_node, 'to_node ID'].values[0])
-    #         charge_station_info[f"cs{len(charge_station_info) + 1}"] = {
-    #             "cs_id": f"cs{len(charge_station_info) + 1}",
-    #             "on_charge_node": "i" + str(on_charge_node),
-    #             "off_charge_node": "i" + str(off_charge_node)
-    #         }
 
     def normalize_node_id(x):
         return str(int(float(x)))
@@ -850,81 +602,6 @@ def solve(node_file_path, travel_data_file_path, service_time_file_path, waste_d
     updated_routes = dict()
     updated_routes = {k: all_routes[k] for k in select_keys}
 
-
-
-    # all_route_ids = {}  # save the route ids for each truck that service varying number of customers
-    # all_routes = {}  # save all generated routes
-    # route_pool = []  # Pool of all generated routes
-    #
-    # # # Generate and add 1-community routes
-    # nv1_route_ids = {}
-    # for truck_id in truck_info.keys():
-    #     cur_truck_route_ids = []
-    #     for cm_id in community_info.keys():
-    #         # print(f"Processing Truck: {truck_id}, Community: {cm_id}")
-    #
-    #         # Generate a route with a single truck serving a single community
-    #         route = mf.generate_1v1(truck_id, cm_id)
-    #         # print(f"Generated Route: {route}")
-    #
-    #         # Check if the route is feasible
-    #         if_route_feasible = mf.check_route_feasibility(route)
-    #         # print(f"Feasibility of Route: {if_route_feasible}")
-    #
-    #         if if_route_feasible == True:
-    #             # If feasible, add to route pool and record it
-    #             if route not in route_pool:
-    #                 route_pool.append(route)
-    #                 route_id = mf.add_to_all_route(route, if_route_feasible, truck_id)
-    #                 cur_truck_route_ids.append(route_id)
-    #                 # print(f"Route Added: {route}")
-    #         else:
-    #             # If not feasible, check if inserting charging stations makes it feasible
-    #             if if_route_feasible == 'range_violation':
-    #                 print(f"Route violates range, attempting to insert charging stations: {route}")
-    #                 fesible_routes_with_charge = mf.insert_charge_station(route)
-    #                 if len(fesible_routes_with_charge) > 0:
-    #                     for fesible_route in fesible_routes_with_charge:
-    #                         if fesible_route not in route_pool:
-    #                             route_pool.append(fesible_route)
-    #                             route_id = mf.add_to_all_route(fesible_route, True, truck_id)
-    #                             cur_truck_route_ids.append(route_id)
-    #                             # print(f"Route Added After Charging Station Insertion: {fesible_route}")
-    #                 else:
-    #                     print(f"Route still infeasible even after attempting charging station insertion: {route}")
-    #
-    #     nv1_route_ids[truck_id] = cur_truck_route_ids
-    #
-    # # Store the 1-community routes
-    # # print(f"m: {1}; # number of routes: {len(all_routes)}")
-    # all_route_ids[1] = nv1_route_ids
-    #
-    # # Generate and add 2-community and 3-community routes to the initial columns
-    # for m in range(2, init_max_cm_count + 1):
-    #     generate_nvm_routes(m)
-    #
-    # # Combine all generated routes (1-community, 2-community, etc.)
-    # for m in range(2, init_max_cm_count + 1):
-    #     all_route_ids[1] = {**all_route_ids[1], **all_route_ids[m]}
-    #
-    # # Print the final set of initial columns
-    # print("\nInitial columns (1-community, 2-community, etc.) generated:")
-    # for route_id, route_data in all_routes.items():
-    #     print(f"Route ID: {route_id}, Route: {route_data['route']}")
-    #
-    # select_num = len(all_routes)
-    #
-    # all_keys = list(all_routes.keys())
-    # select_keys = all_keys[:select_num]
-    #
-    # updated_routes = dict()
-    # updated_routes = {k: all_routes[k] for k in select_keys}
-
-
-
-    # for key in all_routes.keys():
-    #     if all_routes[key]['count_cm'] == 3:
-    #         print(all_routes[key]['route'])
 
     # mf.pause_and_continue()
 
