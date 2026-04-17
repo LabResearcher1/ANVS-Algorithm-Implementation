@@ -27,7 +27,7 @@ def main():
     travel_data_file = 'complete_travel_data.csv'
     # travel_data_file = 'complete_travel_data.csv'
 
-    service_time_file = 'case5_service_time.csv'
+    service_time_file = 'case1_service_time.csv'
     # service_time_file = 'base_service_time.csv'
 
     waste_demand_file = 'waste_demand.csv'
