@@ -9,7 +9,6 @@ This scripts implements the AVNS algorithm following the algorithmic description
 - Adaptive operator weights (scoring-based) + dynamic penalty factors for constraint violations
 
 IMPORTANT (per your request):
-- This does NOT treat ALNS-style "destroy+repair" as neighborhoods.
 - Neighborhoods are classic VNS/VRP operators (swap/relocate/2-opt + charging-station operators).
 
 
