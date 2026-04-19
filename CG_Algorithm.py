@@ -444,13 +444,13 @@ def solve(node_file_path, travel_data_file_path, service_time_file_path, waste_d
     global travel_dist_dict, travel_time_dict, max_driving_range, min_driving_range, community_info, charge_station_info, truck_info, truck_cap, all_route_ids, all_routes, route_pool
     global unit_dist_cost, unit_time_cost, unit_charge_cost, charge_rate, min_charge_time
     unit_dist_cost = 2.0
-    unit_time_cost = 0.6  # 0.35
-    unit_charge_cost = 0.8 # 1.56
+    unit_time_cost = 0.6
+    unit_charge_cost = 0.8
     charge_rate = 0.5 # mile per minute
-    min_charge_time = 5 # 20
+    min_charge_time = 5
     ###################### varying values of parameters across different instance #################
-    max_driving_range = 45 # 150
-    min_driving_range = 5 # 30
+    max_driving_range = 45
+    min_driving_range = 5
     fleet_size = 6 # 1
     truck_cap = 28000 # 26000
     ################################################################################################
