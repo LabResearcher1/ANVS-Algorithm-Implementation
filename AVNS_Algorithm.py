@@ -91,7 +91,7 @@ def read_csv(filename: str) -> pd.DataFrame:
 
 complete_nodes = read_csv("complete_nodes.csv")
 waste_demand = read_csv("waste_demand.csv")
-service_time_df = read_csv("case1_service_time.csv")
+service_time_df = read_csv("case5_service_time.csv")
 complete_travel_data = read_csv("complete_travel_data.csv")
 
 # Process nodes
