@@ -886,7 +886,7 @@ NEIGHBORHOODS = [
 def local_search(state: EVRPState, rng: np.random.Generator, tries: int = LOCAL_SEARCH_TRIES) -> EVRPState:
     """
     Intensification:
-    Apply a sequence of improving moves. This is kept simple but matches AVNS idea:
+    Apply a sequence of improving moves.
     - explore known operators and keep the best improvements
     - allow infeasible during the walk (penalized cost)
     """
