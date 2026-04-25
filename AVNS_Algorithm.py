@@ -1096,8 +1096,8 @@ def run_avns() -> Tuple[EVRPState, EVRPState, Dict[str, float]]:
         history_current.append(current_cost)
         history_best.append(best_cost)
 
-        # Optional: print progress
-        print(f"Iter {omega}: "f"Current Objective (penalized) = {S.penalized_cost():.2f}, "f"Best Objective (true) = {S.objective():.2f}")
+        # print progress
+        print(f"Iter {omega}: "f"Current (penalized) = {S.penalized_cost():.2f}, "f"Current (true) = {S.objective():.2f}")
 
         # cool temperature
         Tcur *= EPSILON
